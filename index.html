@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GO HiraKana! - Belajar & Kuis Huragana Katakana</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        japanese: ['Zen Maru Gothic', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-300">
+
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Left: Hamburger button & Logo -->
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleSidebar()" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition flex items-center justify-center" aria-label="Menu">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('home')">
+                    <div class="bg-rose-500 text-white p-2 rounded-xl shadow-lg shadow-rose-500/30 flex items-center justify-center w-10 h-10 font-bold text-lg font-japanese">
+                        GO
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-tight bg-gradient-to-r from-rose-500 to-orange-500 bg-clip-text text-transparent">GO HiraKana!</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Belajar Hiragana & Katakana</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Right: Kept intentionally empty as requested -->
+            <div class="flex items-center space-x-2"></div>
+        </div>
+    </header>
+
+    <div id="sidebar-overlay" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden transition-opacity" onclick="toggleSidebar()"></div>
+    <div id="sidebar-drawer" class="fixed top-0 left-0 bottom-0 z-50 w-80 bg-white dark:bg-slate-800 shadow-2xl border-r border-slate-200 dark:border-slate-700 transform -translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-rose-500 text-white p-2 rounded-xl font-bold font-japanese text-sm w-8 h-8 flex items-center justify-center">GO</div>
+                <h3 class="font-bold text-lg">Menu Navigasi</h3>
+            </div>
+            <button onclick="toggleSidebar()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-6 space-y-4 flex-grow overflow-y-auto">
+            <button onclick="switchView('home'); toggleSidebar();" class="w-full flex items-center space-x-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition text-left font-medium">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center"><i class="fas fa-home"></i></div>
+                <div>
+                    <div class="font-bold text-sm">Beranda</div>
+                    <div class="text-xs text-slate-400">Kembali ke menu utama</div>
+                </div>
+            </button>
+
+            <button onclick="openChartModal(); toggleSidebar();" class="w-full flex items-center space-x-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition text-left font-medium">
+                <div class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 flex items-center justify-center"><i class="fas fa-table"></i></div>
+                <div>
+                    <div class="font-bold text-sm">Diagram Huruf (Gojūon)</div>
+                    <div class="text-xs text-slate-400">Tabel lengkap Hiragana & Katakana</div>
+                </div>
+            </button>
+
+            <button onclick="toggleDarkMode();" class="w-full flex items-center space-x-3 p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-700/50 transition text-left font-medium">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-500 flex items-center justify-center"><i id="sidebar-theme-icon" class="fas fa-moon"></i></div>
+                <div>
+                    <div class="font-bold text-sm">Mode Gelap</div>
+                    <div class="text-xs text-slate-400">Ubah tampilan terang/gelap</div>
+                </div>
+            </button>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-slate-700">
+                <div class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Pengaturan Aplikasi</div>
+                <button onclick="resetProgressData(); toggleSidebar();" class="w-full flex items-center space-x-3 p-3 rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-900/20 transition text-left text-rose-500 font-medium">
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-500 flex items-center justify-center"><i class="fas fa-redo"></i></div>
+                    <div>
+                        <div class="font-bold text-sm">Reset Progress</div>
+                        <div class="text-xs text-rose-400">Hapus data kuis & bintang</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+        <div class="p-4 border-t border-slate-100 dark:border-slate-700 text-center text-xs text-slate-400">
+            GO HiraKana! v2.2
+        </div>
+    </div>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+        
+        <!-- HOME VIEW -->
+        <div id="view-home" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-rose-500 to-orange-500 rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-rose-500/20 relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10 transform translate-x-10 translate-y-10 font-japanese text-9xl pointer-events-none">
+                    あ
+                </div>
+                <div class="relative z-10 max-w-xl">
+                    <span class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">3 Bagian Kurikulum</span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold mt-3 mb-2">Kuasai Huruf Jepang dengan Mudah & Seru!</h2>
+                    <p class="text-rose-100 text-sm sm:text-base mb-6">Pelajari huruf Asli (Gojūon), Dakuten/Handakuten, hingga Yōon dengan flashcard interaktif, diagram lengkap, dan kuis uji kemampuan bernilai bintang.</p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="startMainLearning()" class="bg-white text-rose-600 font-semibold px-6 py-3 rounded-2xl shadow-lg hover:bg-rose-50 transition transform active:scale-95 flex items-center">
+                            <i class="fas fa-rocket mr-2"></i> Mulai Belajar
+                        </button>
+                        <button onclick="openChartModal()" class="bg-white/20 backdrop-blur-md border border-white/30 text-white font-semibold px-5 py-3 rounded-2xl hover:bg-white/30 transition transform active:scale-95 flex items-center">
+                            <i class="fas fa-chart-bar mr-2"></i> Lihat Diagram Tabel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 text-amber-500 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">Total Bintang</div>
+                        <div id="stat-stars" class="text-lg font-bold">0</div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">Bagian Selesai</div>
+                        <div id="stat-completed" class="text-lg font-bold">0 / 0</div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-500 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">Akurasi Rata-rata</div>
+                        <div id="stat-accuracy" class="text-lg font-bold">0%</div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 text-purple-500 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400">Huruf Dikuasai</div>
+                        <div id="stat-letters" class="text-lg font-bold">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Script & Category Tabs -->
+            <div class="space-y-4 pt-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <!-- Script Switcher (Hiragana / Katakana) -->
+                    <div class="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-2xl">
+                        <button onclick="switchActiveScript('hiragana')" id="script-tab-hiragana" class="py-2 px-5 rounded-xl font-semibold text-sm transition bg-white dark:bg-slate-700 text-rose-500 shadow-sm">
+                            Hiragana (ひらがな)
+                        </button>
+                        <button onclick="switchActiveScript('katakana')" id="script-tab-katakana" class="py-2 px-5 rounded-xl font-semibold text-sm transition text-slate-500 dark:text-slate-400">
+                            Katakana (カタカナ)
+                        </button>
+                    </div>
+
+                    <!-- Category Switcher (Bagian 1, 2, 3) -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="switchCategory('part1')" id="cat-btn-part1" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-rose-500 text-white shadow-md shadow-rose-500/20">
+                            Bagian 1: Huruf Asli
+                        </button>
+                        <button onclick="switchCategory('part2')" id="cat-btn-part2" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                            Bagian 2: Dakuten & Handakuten
+                        </button>
+                        <button onclick="switchCategory('part3')" id="cat-btn-part3" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                            Bagian 3: Yōon (Kombinasi)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Levels Grid Container -->
+            <div id="levels-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Populated via JavaScript -->
+            </div>
+        </div>
+
+        <!-- LESSON / FLASHCARD VIEW -->
+        <div id="view-lesson" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <button onclick="switchView('home')" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium text-sm hover:bg-slate-300 transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Menu
+                </button>
+                <div id="lesson-header-title" class="font-bold text-sm sm:text-lg text-rose-500 text-center">Bagian 1: A-I-U-E-O</div>
+                <button onclick="startQuizFromLesson()" class="px-4 py-2 rounded-xl bg-rose-500 text-white font-medium text-sm hover:bg-rose-600 shadow-lg shadow-rose-500/20 transition">
+                    Mulai Kuis <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+
+            <!-- Flashcard Carousel -->
+            <div class="max-w-md mx-auto">
+                <div class="perspective-1000 w-full h-80 cursor-pointer" onclick="flipCard()">
+                    <div id="flashcard-inner" class="relative w-full h-full duration-500 transform-style-3d shadow-xl rounded-3xl">
+                        <!-- Front Card -->
+                        <div class="absolute inset-0 w-full h-full bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl p-6 flex flex-col items-center justify-center backface-hidden">
+                            <span class="text-xs uppercase font-bold tracking-widest text-slate-400 mb-2">Ketuk untuk membalik</span>
+                            <div id="card-char" class="font-japanese text-8xl font-bold text-slate-800 dark:text-white my-4">あ</div>
+                            <div id="card-romaji" class="text-xl font-semibold text-rose-500">a</div>
+                        </div>
+                        <!-- Back Card -->
+                        <div class="absolute inset-0 w-full h-full bg-rose-500 text-white rounded-3xl p-6 flex flex-col items-center justify-center backface-hidden rotate-y-180">
+                            <span class="text-xs uppercase font-bold tracking-widest text-rose-200 mb-1">Contoh Kosakata</span>
+                            <div id="card-vocab-jp" class="font-japanese text-3xl font-bold mb-1">あめ (Ame)</div>
+                            <div id="card-vocab-id" class="text-sm text-rose-100 mb-4">Artinya: Hujan</div>
+                            <div class="bg-white/10 px-4 py-2 rounded-xl text-xs text-center backdrop-blur-sm">
+                                <i class="fas fa-info-circle mr-1"></i> Pelajari dan ingat pola bunyinya dengan baik.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flashcard Navigation Controls -->
+                <div class="flex items-center justify-between mt-6 px-4">
+                    <button onclick="prevCard()" class="p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 transition">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <span id="card-pagination" class="font-semibold text-sm text-slate-500">1 dari 5</span>
+                    <button onclick="nextCard()" class="p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 transition">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- List of Section Characters -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                <h3 class="font-bold text-base mb-4">Daftar Huruf di Bagian Ini</h3>
+                <div id="section-chars-list" class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ VIEW -->
+        <div id="view-quiz" class="hidden max-w-xl mx-auto space-y-6">
+            <div class="flex items-center justify-between bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+                <button onclick="quitQuiz()" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium">
+                    <i class="fas fa-times mr-1"></i> Keluar
+                </button>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full bg-rose-50 dark:bg-rose-900/30 text-rose-500" id="quiz-progress-text">Soal 1/5</span>
+                </div>
+                <div class="flex items-center text-amber-500 font-bold text-sm">
+                    <i class="fas fa-star mr-1"></i> <span id="quiz-score">0</span>
+                </div>
+            </div>
+
+            <!-- Quiz Card -->
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-700 shadow-xl space-y-6 text-center">
+                <div id="quiz-question-type" class="text-xs font-bold uppercase tracking-widest text-slate-400">Pilihan Ganda</div>
+                
+                <div id="quiz-question-display" class="font-japanese text-7xl sm:text-8xl font-bold text-slate-800 dark:text-white py-4">
+                    あ
+                </div>
+
+                <div id="quiz-prompt" class="font-medium text-slate-600 dark:text-slate-300">
+                    Manakah romaji yang benar untuk huruf di atas?
+                </div>
+
+                <!-- Multiple Choice Container -->
+                <div id="quiz-options-container" class="grid grid-cols-2 gap-3 pt-2">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="quiz-feedback" class="hidden p-4 rounded-2xl font-medium text-sm flex items-center justify-center space-x-2">
+                    <!-- Dynamic feedback message -->
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ RESULT VIEW -->
+        <div id="view-result" class="hidden max-w-md mx-auto space-y-6 text-center">
+            <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-100 dark:border-slate-700 shadow-xl space-y-6">
+                <div id="result-icon-container" class="w-20 h-20 bg-amber-50 dark:bg-amber-900/30 text-amber-500 rounded-3xl mx-auto flex items-center justify-center text-4xl shadow-inner">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div>
+                    <h2 id="result-title" class="text-2xl font-bold">Luar Biasa!</h2>
+                    <p id="result-subtitle" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Kamu berhasil menyelesaikan kuis bagian ini.</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3 py-4 border-y border-slate-100 dark:border-slate-700">
+                    <div>
+                        <div class="text-xs text-slate-400">Skor</div>
+                        <div id="result-score" class="text-lg font-bold text-rose-500">100</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Bintang</div>
+                        <div id="result-stars" class="text-lg font-bold text-amber-500">⭐⭐⭐</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400">Akurasi</div>
+                        <div id="result-accuracy" class="text-lg font-bold text-emerald-500">100%</div>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="restartQuiz()" class="w-full py-3 bg-rose-500 text-white font-bold rounded-2xl shadow-lg shadow-rose-500/20 hover:bg-rose-600 transition">
+                        Ulangi Kuis
+                    </button>
+                    <button onclick="switchView('home')" class="w-full py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-2xl hover:bg-slate-200 transition">
+                        Kembali ke Menu Utama
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CHARACTER CHART MODAL -->
+    <div id="chart-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-100 dark:border-slate-700">
+            <div class="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <h3 class="font-bold text-lg sm:text-xl">Diagram Tabel Huruf Lengkap</h3>
+                    <!-- Chart Script Switcher -->
+                    <div class="flex bg-slate-100 dark:bg-slate-700 p-1 rounded-xl">
+                        <button onclick="switchChartScript('hiragana')" id="chart-btn-hiragana" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-600 text-rose-500 shadow-sm">Hiragana</button>
+                        <button onclick="switchChartScript('katakana')" id="chart-btn-katakana" class="px-3 py-1 rounded-lg text-xs font-bold transition text-slate-500 dark:text-slate-300">Katakana</button>
+                    </div>
+                </div>
+                <button onclick="closeChartModal()" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-6 flex-grow" id="chart-content-container">
+                <!-- Dynamically rendered chart tables -->
+            </div>
+        </div>
+    </div>
+
+    <main-footer class="mt-auto py-6 text-center text-xs text-slate-400 border-t border-slate-200 dark:border-slate-800">
+        <p>GO HiraKana! Interactive Learning App &copy; 2026. Belajar Bahasa Jepang jadi menyenangkan.</p>
+    </main-footer>
+
+    <script>
+        // Database Huruf Lengkap dibagi menjadi 3 Bagian sesuai spesifikasi
+        const hiraganaDatabase = {
+            part1: [
+                { id: 101, title: "Bagian 1: A-I-U-E-O", chars: [
+                    { jp: 'あ', romaji: 'a', vocabJp: 'あめ (Ame)', vocabId: 'Hujan' },
+                    { jp: 'い', romaji: 'i', vocabJp: 'いぬ (Inu)', vocabId: 'Anjing' },
+                    { jp: 'う', romaji: 'u', vocabJp: 'うみ (Umi)', vocabId: 'Laut' },
+                    { jp: 'え', romaji: 'e', vocabJp: 'えき (Eki)', vocabId: 'Stasiun' },
+                    { jp: 'お', romaji: 'o', vocabJp: 'おに (Oni)', vocabId: 'Setan' }
+                ]},
+                { id: 102, title: "Bagian 2: Ka-Ki-Ku-Ke-Ko", chars: [
+                    { jp: 'か', romaji: 'ka', vocabJp: 'かき (Kaki)', vocabId: 'Kesemek' },
+                    { jp: 'き', romaji: 'ki', vocabJp: 'き (Ki)', vocabId: 'Pohon' },
+                    { jp: 'く', romaji: 'ku', vocabJp: 'くつ (Kutsu)', vocabId: 'Sepatu' },
+                    { jp: 'け', romaji: 'ke', vocabJp: 'けいと (Keito)', vocabId: 'Benang Wol' },
+                    { jp: 'こ', romaji: 'ko', vocabJp: 'こども (Kodomo)', vocabId: 'Anak-anak' }
+                ]},
+                { id: 103, title: "Bagian 3: Sa-Shi-Su-Se-So", chars: [
+                    { jp: 'さ', romaji: 'sa', vocabJp: 'さくら (Sakura)', vocabId: 'Bunga Sakura' },
+                    { jp: 'し', romaji: 'shi', vocabJp: 'しお (Shio)', vocabId: 'Garam' },
+                    { jp: 'す', romaji: 'su', vocabJp: 'すし (Sushi)', vocabId: 'Sushi' },
+                    { jp: 'せ', romaji: 'se', vocabJp: 'せんせい (Sensei)', vocabId: 'Guru' },
+                    { jp: 'そ', romaji: 'so', vocabJp: 'そら (Sora)', vocabId: 'Langit' }
+                ]},
+                { id: 104, title: "Bagian 4: Ta-Chi-Tsu-Te-To", chars: [
+                    { jp: 'た', romaji: 'ta', vocabJp: 'たいこ (Taiko)', vocabId: 'Drum' },
+                    { jp: 'ち', romaji: 'chi', vocabJp: 'ちず (Chizu)', vocabId: 'Peta' },
+                    { jp: 'つ', romaji: 'tsu', vocabJp: 'つくえ (Tsukue)', vocabId: 'Meja' },
+                    { jp: 'て', romaji: 'te', vocabJp: 'て (Te)', vocabId: 'Tangan' },
+                    { jp: 'と', romaji: 'to', vocabJp: 'とけい (Tokei)', vocabId: 'Jam' }
+                ]},
+                { id: 105, title: "Bagian 5: Na-Ni-Nu-Ne-No", chars: [
+                    { jp: 'な', romaji: 'na', vocabJp: 'なす (Nasu)', vocabId: 'Terong' },
+                    { jp: 'に', romaji: 'ni', vocabJp: 'にく (Niku)', vocabId: 'Daging' },
+                    { jp: 'ぬ', romaji: 'nu', vocabJp: 'ぬいぐるみ (Nuigurumi)', vocabId: 'Boneka' },
+                    { jp: 'ね', romaji: 'ne', vocabJp: 'ねこ (Neko)', vocabId: 'Kucing' },
+                    { jp: 'の', romaji: 'no', vocabJp: 'ノート (Nooto)', vocabId: 'Buku' }
+                ]},
+                { id: 106, title: "Bagian 6: Ha-Hi-Fu-He-Ho", chars: [
+                    { jp: 'は', romaji: 'ha', vocabJp: 'はな (Hana)', vocabId: 'Bunga' },
+                    { jp: 'ひ', romaji: 'hi', vocabJp: 'ひこうき (Hikouki)', vocabId: 'Pesawat' },
+                    { jp: 'ふ', romaji: 'fu', vocabJp: 'ふね (Fune)', vocabId: 'Kapal' },
+                    { jp: 'へ', romaji: 'he', vocabJp: 'へび (Hebi)', vocabId: 'Ular' },
+                    { jp: 'ほ', romaji: 'ho', vocabJp: 'ほし (Hoshi)', vocabId: 'Bintang' }
+                ]},
+                { id: 107, title: "Bagian 7: Ma-Mi-Mu-Me-Mo", chars: [
+                    { jp: 'ま', romaji: 'ma', vocabJp: 'まど (Mado)', vocabId: 'Jendela' },
+                    { jp: 'み', romaji: 'mi', vocabJp: 'みかん (Mikan)', vocabId: 'Jeruk' },
+                    { jp: 'む', romaji: 'mu', vocabJp: 'むし (Mushi)', vocabId: 'Serangga' },
+                    { jp: 'め', romaji: 'me', vocabJp: 'め (Me)', vocabId: 'Mata' },
+                    { jp: 'も', romaji: 'mo', vocabJp: 'もも (Momo)', vocabId: 'Persik' }
+                ]},
+                { id: 108, title: "Bagian 8: Ya-Yu-Yo & Wa-Wo", chars: [
+                    { jp: 'や', romaji: 'ya', vocabJp: 'やま (Yama)', vocabId: 'Gunung' },
+                    { jp: 'ゆ', romaji: 'yu', vocabJp: 'ゆき (Yuki)', vocabId: 'Salju' },
+                    { jp: 'よ', romaji: 'yo', vocabJp: 'よる (Yoru)', vocabId: 'Malam' },
+                    { jp: 'わ', romaji: 'wa', vocabJp: 'わに (Wani)', vocabId: 'Buaya' },
+                    { jp: 'を', romaji: 'wo', vocabJp: 'を (Wo)', vocabId: 'Partikel' }
+                ]},
+                { id: 109, title: "Bagian 9: Ra-Ri-Ru-Re-Ro & N (6 Huruf)", chars: [
+                    { jp: 'ら', romaji: 'ra', vocabJp: 'らくだ (Rakuda)', vocabId: 'Unta' },
+                    { jp: 'り', romaji: 'ri', vocabJp: 'りんご (Ringo)', vocabId: 'Apel' },
+                    { jp: 'る', romaji: 'ru', vocabJp: 'るす (Rusu)', vocabId: 'Keluar' },
+                    { jp: 'れ', romaji: 're', vocabJp: 'れきし (Rekishi)', vocabId: 'Sejarah' },
+                    { jp: 'ろ', romaji: 'ro', vocabJp: 'ろうそく (Rousoku)', vocabId: 'Lilin' },
+                    { jp: 'ん', romaji: 'n', vocabJp: 'ぱん (Pan)', vocabId: 'Roti' }
+                ]}
+            ],
+            part2: [
+                { id: 201, title: "Bagian D1: Ga-Gi-Gu-Ge-Go", chars: [
+                    { jp: 'が', romaji: 'ga', vocabJp: 'がくせい (Gakusei)', vocabId: 'Mahasiswa' },
+                    { jp: 'ぎ', romaji: 'gi', vocabJp: 'ぎゅうにゅう (Gyuunyuu)', vocabId: 'Susu Sapi' },
+                    { jp: 'ぐ', romaji: 'gu', vocabJp: 'ぐんま (Gunma)', vocabId: 'Prefektur Gunma' },
+                    { jp: 'げ', romaji: 'ge', vocabJp: 'げんかん (Genkan)', vocabId: 'Pintu Masuk' },
+                    { jp: 'ご', romaji: 'go', vocabJp: 'ごはん (Gohan)', vocabId: 'Nasi' }
+                ]},
+                { id: 202, title: "Bagian D2: Za-Ji-Zu-Ze-Zo", chars: [
+                    { jp: 'ざ', romaji: 'za', vocabJp: 'ざっし (Zasshi)', vocabId: 'Majalah' },
+                    { jp: 'じ', romaji: 'ji', vocabJp: 'じかん (Jikan)', vocabId: 'Waktu' },
+                    { jp: 'ず', romaji: 'zu', vocabJp: 'ずしょ (Zusho)', vocabId: 'Buku' },
+                    { jp: 'ぜ', romaji: 'ze', vocabJp: 'ぜんぶ (Zenbu)', vocabId: 'Semua' },
+                    { jp: 'ぞ', romaji: 'zo', vocabJp: 'ぞう (Zou)', vocabId: 'Gajah' }
+                ]},
+                { id: 203, title: "Bagian D3: Da-Ji-Zu-De-Do", chars: [
+                    { jp: 'だ', romaji: 'da', vocabJp: 'だいがく (Daigaku)', vocabId: 'Universitas' },
+                    { jp: 'ぢ', romaji: 'ji', vocabJp: 'はじまり (Hajimari)', vocabId: 'Mulai' },
+                    { jp: 'づ', romaji: 'zu', vocabJp: 'つづく (Tsuzuku)', vocabId: 'Berlanjut' },
+                    { jp: 'で', romaji: 'de', vocabJp: 'でんわ (Denwa)', vocabId: 'Telepon' },
+                    { jp: 'ど', romaji: 'do', vocabJp: 'ドア (Doa)', vocabId: 'Pintu' }
+                ]},
+                { id: 204, title: "Bagian D4: Ba-Bi-Bu-Be-Bo", chars: [
+                    { jp: 'ば', romaji: 'ba', vocabJp: 'ばら (Bara)', vocabId: 'Mawar' },
+                    { jp: 'び', romaji: 'bi', vocabJp: 'びょういん (Byouin)', vocabId: 'Rumah Sakit' },
+                    { jp: 'ぶ', romaji: 'bu', vocabJp: 'ぶた (Buta)', vocabId: 'Babi' },
+                    { jp: 'べ', romaji: 'be', vocabJp: 'べんとう (Bentou)', vocabId: 'Bekal' },
+                    { jp: 'ぼ', romaji: 'bo', vocabJp: 'ぼうし (Boushi)', vocabId: 'Topi' }
+                ]},
+                { id: 205, title: "Bagian D5: Pa-Pi-Pu-Pe-Po (Handakuten)", chars: [
+                    { jp: 'ぱ', romaji: 'pa', vocabJp: 'ぱん (Pan)', vocabId: 'Roti' },
+                    { jp: 'ぴ', romaji: 'pi', vocabJp: 'ぴあの (Piano)', vocabId: 'Piano' },
+                    { jp: 'ぷ', romaji: 'pu', vocabJp: 'ぷール (Puuru)', vocabId: 'Kolam Renang' },
+                    { jp: 'ぺ', romaji: 'pe', vocabJp: 'ぺん (Pen)', vocabId: 'Pena' },
+                    { jp: 'ぽ', romaji: 'po', vocabJp: 'ぽけっと (Poketto)', vocabId: 'Saku' }
+                ]}
+            ],
+            part3: [
+                { id: 301, title: "Bagian Y1: Kya-Kyu-Kyo & Gya", chars: [
+                    { jp: 'きゃ', romaji: 'kya', vocabJp: 'きゃく (Kyaku)', vocabId: 'Tamu' },
+                    { jp: 'きゅ', romaji: 'kyu', vocabJp: 'きゅうり (Kyuuri)', vocabId: 'Timun' },
+                    { jp: 'きょ', romaji: 'kyo', vocabJp: 'きょう (Kyou)', vocabId: 'Hari Ini' },
+                    { jp: 'ぎゃ', romaji: 'gya', vocabJp: 'ぎゃく (Gyaku)', vocabId: 'Terbalik' },
+                    { jp: 'ぎょ', romaji: 'gyo', vocabJp: 'ぎょうざ (Gyouza)', vocabId: 'Gyoza' }
+                ]},
+                { id: 302, title: "Bagian Y2: Sha-Shu-Sho & Ja", chars: [
+                    { jp: 'しゃ', romaji: 'sha', vocabJp: 'しゃしん (Shashin)', vocabId: 'Foto' },
+                    { jp: 'しゅ', romaji: 'shu', vocabJp: 'しゅみ (Shumi)', vocabId: 'Hobi' },
+                    { jp: 'しょ', romaji: 'sho', vocabJp: 'しょくじ (Shokuji)', vocabId: 'Makan' },
+                    { jp: 'じゃ', romaji: 'ja', vocabJp: 'じゃがいも (Jagaimo)', vocabId: 'Kentang' },
+                    { jp: 'じょ', romaji: 'jo', vocabJp: 'じょせい (Josei)', vocabId: 'Wanita' }
+                ]},
+                { id: 303, title: "Bagian Y3: Cha-Chu-Cho & Nya", chars: [
+                    { jp: 'ちゃ', romaji: 'cha', vocabJp: 'おちゃ (Ocha)', vocabId: 'Teh Hijau' },
+                    { jp: 'ちゅ', romaji: 'chu', vocabJp: 'ちゅうごく (Chuugoku)', vocabId: 'Tiongkok' },
+                    { jp: 'ちょ', romaji: 'cho', vocabJp: 'ちょきん (Chokin)', vocabId: 'Tabungan' },
+                    { jp: 'にゃ', romaji: 'nya', vocabJp: 'にゃん (Nyan)', vocabId: 'Suara Kucing' },
+                    { jp: 'にょ', romaji: 'nyo', vocabJp: 'にょうぼう (Nyoubou)', vocabId: 'Istri' }
+                ]},
+                { id: 304, title: "Bagian Y4: Hya-Hyu-Hyo & Bya-Bya", chars: [
+                    { jp: 'ひゃ', romaji: 'hya', vocabJp: 'ひゃく (Hyaku)', vocabId: 'Seratus' },
+                    { jp: 'ひゅ', romaji: 'hyu', vocabJp: 'ヒューストン (Hyuusuton)', vocabId: 'Houston' },
+                    { jp: 'ひょ', romaji: 'hyo', vocabJp: 'ひょう (Hyou)', vocabId: 'Macan Tutul' },
+                    { jp: 'びゃ', romaji: 'bya', vocabJp: 'びゃくえん (Byakuen)', vocabId: 'Koin 100' },
+                    { jp: 'ぴょ', romaji: 'pyo', vocabJp: 'ぴょんぴょん (Pyonpyon)', vocabId: 'Melompat' }
+                ]},
+                { id: 305, title: "Bagian Y5: Mya-Myu-Myo & Rya", chars: [
+                    { jp: 'みゃ', romaji: 'mya', vocabJp: 'みゃあ (Myaa)', vocabId: 'Meow' },
+                    { jp: 'みゅ', romaji: 'myu', vocabJp: 'ミュージック (Myuujikku)', vocabId: 'Musik' },
+                    { jp: 'みょ', romaji: 'myo', vocabJp: 'みょうじ (Myouji)', vocabId: 'Nama Keluarga' },
+                    { jp: 'りゃ', romaji: 'rya', vocabJp: 'りゃくす (Ryakusu)', vocabId: 'Menyingkat' },
+                    { jp: 'りょ', romaji: 'ryo', vocabJp: 'りょこう (Ryokou)', vocabId: 'Wisata' }
+                ]}
+            ]
+        };
+
+        const katakanaDatabase = {
+            part1: JSON.parse(JSON.stringify(hiraganaDatabase.part1)),
+            part2: JSON.parse(JSON.stringify(hiraganaDatabase.part2)),
+            part3: JSON.parse(JSON.stringify(hiraganaDatabase.part3))
+        };
+
+        const hiraToKataMap = {
+            'あ':'ア','い':'イ','う':'ウ','え':'エ','お':'オ','か':'カ','き':'キ','く':'ク','け':'ケ','こ':'コ',
+            'さ':'サ','し':'シ','す':'ス','せ':'セ','そ':'ソ','た':'タ','ち':'チ','つ':'ツ','て':'テ','と':'ト',
+            'な':'ナ','に':'ニ','ぬ':'ヌ','ね':'ネ','の':'ノ','は':'ハ','ひ':'ヒ','ふ':'フ','へ':'ヘ','ほ':'ホ',
+            'ま':'マ','み':'ミ','む':'ム','め':'メ','も':'モ','や':'ヤ','ゆ':'ユ','よ':'ヨ',
+            'ら':'ラ','り':'リ','る':'ル','れ':'レ','ろ':'ロ','ん':'ン',
+            'が':'ガ','ぎ':'ギ','ぐ':'グ','げ':'ゲ','ご':'ゴ','ざ':'ザ','じ':'ジ','ず':'ズ','ぜ':'ゼ','ぞ':'ゾ',
+            'だ':'ダ','ぢ':'ヂ','づ':'ヅ','で':'デ','ど':'ド','ば':'バ','び':'ビ','ぶ':'ブ','べ':'ベ','ぼ':'ボ',
+            'ぱ':'パ','ぴ':'ピ','ぷ':'プ','ぺ':'ペ','ぽ':'ポ',
+            'きゃ':'キャ','きゅ':'キュ','きょ':'キョ','ぎゃ':'ギャ','ぎゅ':'ギュ','ぎょ':'ギョ',
+            'しゃ':'シャ','しゅ':'シュ','しょ':'ショ','じゃ':'ジャ','じゅ':'ジュ','じょ':'ジョ',
+            'ちゃ':'チャ','ちゅ':'チュ','ちょ':'チョ','にゃ':'ニャ','にゅ':'ニュ','にょ':'ニョ',
+            'ひゃ':'ヒャ','ひゅ':'ヒュ','ひょ':'ヒョ','びゃ':'ビャ','びゅ':'ビュ','びょ':'ビョ',
+            'ぴゃ':'ピャ','ぴゅ':'ピュ','ぴょ':'ピョ','みゃ':'ミャ','みゅ':'ミュ','みょ':'ミョ',
+            'りゃ':'リャ','りゅ':'リュ','りょ':'リョ'
+        };
+
+        function convertDatabaseToKatakana(db) {
+            db.forEach(section => {
+                section.chars.forEach(c => {
+                    let convertedJp = '';
+                    for(let char of c.jp) {
+                        convertedJp += hiraToKataMap[char] || char;
+                    }
+                    c.jp = convertedJp;
+                });
+            });
+        }
+        convertDatabaseToKatakana(katakanaDatabase.part1);
+        convertDatabaseToKatakana(katakanaDatabase.part2);
+        convertDatabaseToKatakana(katakanaDatabase.part3);
+
+        let currentScript = 'hiragana';
+        let currentCategory = 'part1';
+        let userProgress = JSON.parse(localStorage.getItem('gohirakana_progress')) || {
+            stars: 0,
+            completedSections: [],
+            sectionScores: {}
+        };
+
+        let currentCards = [];
+        let currentCardIndex = 0;
+        let isCardFlipped = false;
+
+        let quizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizCorrectCount = 0;
+
+        let chartScript = 'hiragana';
+
+        window.onload = function() {
+            updateStats();
+            renderLevels();
+            checkSavedTheme();
+        };
+
+        function checkSavedTheme() {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('sidebar-theme-icon').className = 'fas fa-sun';
+            }
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.getElementById('sidebar-theme-icon').className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleSidebar() {
+            const drawer = document.getElementById('sidebar-drawer');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isOpen = !drawer.classList.contains('-translate-x-full');
+            if (isOpen) {
+                drawer.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                drawer.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        function resetProgressData() {
+            if(confirm("Apakah kamu yakin ingin mereset seluruh progress belajar dan kuis?")) {
+                localStorage.removeItem('gohirakana_progress');
+                userProgress = { stars: 0, completedSections: [], sectionScores: {} };
+                updateStats();
+                renderLevels();
+                alert("Progress berhasil direset!");
+            }
+        }
+
+        function switchView(viewName) {
+            ['home', 'lesson', 'quiz', 'result'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+            });
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function switchActiveScript(script) {
+            currentScript = script;
+            const hBtn = document.getElementById('script-tab-hiragana');
+            const kBtn = document.getElementById('script-tab-katakana');
+            if(script === 'hiragana') {
+                hBtn.className = 'py-2 px-5 rounded-xl font-semibold text-sm transition bg-white dark:bg-slate-700 text-rose-500 shadow-sm';
+                kBtn.className = 'py-2 px-5 rounded-xl font-semibold text-sm transition text-slate-500 dark:text-slate-400';
+            } else {
+                kBtn.className = 'py-2 px-5 rounded-xl font-semibold text-sm transition bg-white dark:bg-slate-700 text-rose-500 shadow-sm';
+                hBtn.className = 'py-2 px-5 rounded-xl font-semibold text-sm transition text-slate-500 dark:text-slate-400';
+            }
+            renderLevels();
+        }
+
+        function switchCategory(cat) {
+            currentCategory = cat;
+            ['part1', 'part2', 'part3'].forEach(p => {
+                const btn = document.getElementById(`cat-btn-${p}`);
+                if(p === cat) {
+                    btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition bg-rose-500 text-white shadow-md shadow-rose-500/20';
+                } else {
+                    btn.className = 'px-4 py-2 rounded-xl text-xs font-bold transition bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+                }
+            });
+            renderLevels();
+        }
+
+        function startMainLearning() {
+            switchCategory('part1');
+            document.getElementById('levels-grid').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderLevels() {
+            const grid = document.getElementById('levels-grid');
+            grid.innerHTML = '';
+            const dbSource = currentScript === 'hiragana' ? hiraganaDatabase : katakanaDatabase;
+            const sections = dbSource[currentCategory];
+
+            sections.forEach(section => {
+                const key = `${currentScript}_${currentCategory}_${section.id}`;
+                const isCompleted = userProgress.completedSections.includes(key);
+                const score = userProgress.sectionScores[key] || 0;
+
+                const card = document.createElement('div');
+                card.className = `bg-white dark:bg-slate-800 rounded-3xl p-5 border ${isCompleted ? 'border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/20' : 'border-slate-100 dark:border-slate-700'} shadow-sm hover:shadow-md transition flex flex-col justify-between`;
+                
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${isCompleted ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400' : 'bg-rose-50 text-rose-500 dark:bg-rose-900/30'}">
+                                ${isCompleted ? 'Selesai' : 'Belum Selesai'}
+                            </span>
+                            <span class="text-xs text-slate-400 font-medium">${section.chars.length} Huruf</span>
+                        </div>
+                        <h3 class="font-bold text-base mb-2">${section.title}</h3>
+                        <div class="flex flex-wrap gap-2 my-3">
+                            ${section.chars.map(c => `<span class="w-9 h-9 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 flex items-center justify-center font-japanese font-bold text-sm sm:text-base">${c.jp}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 mt-2">
+                        <div class="text-xs text-slate-500">Skor: <span class="font-bold text-slate-800 dark:text-white">${score}</span></div>
+                        <div class="flex space-x-2">
+                            <button onclick="openLesson('${currentScript}', '${currentCategory}', ${section.id})" class="px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 text-xs font-semibold rounded-xl transition">
+                                <i class="fas fa-book mr-1"></i> Belajar
+                            </button>
+                            <button onclick="startQuiz('${currentScript}', '${currentCategory}', ${section.id})" class="px-3 py-1.5 bg-rose-500 text-white hover:bg-rose-600 text-xs font-semibold rounded-xl shadow-md shadow-rose-500/20 transition">
+                                <i class="fas fa-play mr-1"></i> Kuis
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        let currentSectionIdentifier = { script: '', category: '', id: 0 };
+
+        function openLesson(script, category, sectionId) {
+            currentScript = script;
+            currentCategory = category;
+            currentSectionIdentifier = { script, category, id: sectionId };
+
+            const dbSource = script === 'hiragana' ? hiraganaDatabase : katakanaDatabase;
+            const section = dbSource[category].find(s => s.id === sectionId);
+            
+            currentCards = section.chars;
+            currentCardIndex = 0;
+            isCardFlipped = false;
+
+            document.getElementById('lesson-header-title').innerText = section.title;
+            renderFlashcard();
+            renderSectionCharsList();
+            switchView('lesson');
+        }
+
+        function renderFlashcard() {
+            const card = currentCards[currentCardIndex];
+            document.getElementById('card-char').innerText = card.jp;
+            document.getElementById('card-romaji').innerText = card.romaji;
+            document.getElementById('card-vocab-jp').innerText = card.vocabJp;
+            document.getElementById('card-vocab-id').innerText = `Artinya: ${card.vocabId}`;
+            document.getElementById('card-pagination').innerText = `${currentCardIndex + 1} dari ${currentCards.length}`;
+
+            const inner = document.getElementById('flashcard-inner');
+            if(isCardFlipped) {
+                inner.classList.remove('rotate-y-180');
+                isCardFlipped = false;
+            }
+        }
+
+        function flipCard() {
+            const inner = document.getElementById('flashcard-inner');
+            isCardFlipped = !isCardFlipped;
+            if(isCardFlipped) {
+                inner.classList.add('rotate-y-180');
+            } else {
+                inner.classList.remove('rotate-y-180');
+            }
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % currentCards.length;
+            renderFlashcard();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + currentCards.length) % currentCards.length;
+            renderFlashcard();
+        }
+
+        function renderSectionCharsList() {
+            const container = document.getElementById('section-chars-list');
+            container.innerHTML = '';
+            container.className = `grid grid-cols-2 sm:grid-cols-${currentCards.length} gap-3`;
+            currentCards.forEach((c, idx) => {
+                const el = document.createElement('div');
+                el.className = `p-3 rounded-2xl border text-center cursor-pointer transition ${idx === currentCardIndex ? 'border-rose-500 bg-rose-50/50 dark:bg-rose-900/20' : 'border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800'}`;
+                el.onclick = () => { currentCardIndex = idx; renderFlashcard(); renderSectionCharsList(); };
+                el.innerHTML = `
+                    <div class="font-japanese text-xl font-bold">${c.jp}</div>
+                    <div class="text-xs text-slate-500">${c.romaji}</div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function startQuizFromLesson() {
+            startQuiz(currentSectionIdentifier.script, currentSectionIdentifier.category, currentSectionIdentifier.id);
+        }
+
+        function startQuiz(script, category, sectionId) {
+            currentScript = script;
+            currentCategory = category;
+            currentSectionIdentifier = { script, category, id: sectionId };
+
+            const dbSource = script === 'hiragana' ? hiraganaDatabase : katakanaDatabase;
+            const section = dbSource[category].find(s => s.id === sectionId);
+
+            quizQuestions = section.chars.map(charObj => {
+                let wrongPool = dbSource[category].flatMap(s => s.chars).filter(c => c.romaji !== charObj.romaji);
+                wrongPool.sort(() => Math.random() - 0.5);
+                let options = [charObj.romaji];
+                for(let i = 0; i < Math.min(3, wrongPool.length); i++) {
+                    options.push(wrongPool[i].romaji);
+                }
+                options.sort(() => Math.random() - 0.5);
+
+                return {
+                    char: charObj.jp,
+                    correct: charObj.romaji,
+                    options: options
+                };
+            });
+
+            quizQuestions.sort(() => Math.random() - 0.5);
+
+            currentQuizIndex = 0;
+            quizScore = 0;
+            quizCorrectCount = 0;
+
+            switchView('quiz');
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            if (currentQuizIndex >= quizQuestions.length) {
+                finishQuiz();
+                return;
+            }
+
+            const q = quizQuestions[currentQuizIndex];
+            document.getElementById('quiz-progress-text').innerText = `Soal ${currentQuizIndex + 1}/${quizQuestions.length}`;
+            document.getElementById('quiz-score').innerText = quizScore;
+            document.getElementById('quiz-question-display').innerText = q.char;
+            
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.add('hidden');
+
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'py-3.5 px-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 font-bold text-lg hover:border-rose-500 hover:bg-rose-50/20 transition transform active:scale-95';
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt, q.correct);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selected, correct) {
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.remove('hidden');
+
+            const isCorrect = selected === correct;
+            const pointsPerQuestion = Math.round(100 / quizQuestions.length);
+            if (isCorrect) {
+                quizScore += pointsPerQuestion;
+                quizCorrectCount++;
+                feedbackEl.className = 'p-4 rounded-2xl font-medium text-sm flex items-center justify-center space-x-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800';
+                feedbackEl.innerHTML = `<i class="fas fa-check-circle mr-1"></i> Benar! Hebat sekali.`;
+            } else {
+                feedbackEl.className = 'p-4 rounded-2xl font-medium text-sm flex items-center justify-center space-x-2 bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800';
+                feedbackEl.innerHTML = `<i class="fas fa-times-circle mr-1"></i> Kurang tepat. Jawaban benar: <strong>${correct}</strong>`;
+            }
+
+            const buttons = document.getElementById('quiz-options-container').getElementsByTagName('button');
+            for(let b of buttons) {
+                b.disabled = true;
+                if(b.innerText === correct) {
+                    b.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+                } else if(b.innerText === selected && !isCorrect) {
+                    b.classList.add('bg-rose-500', 'text-white', 'border-rose-500');
+                }
+            }
+
+            setTimeout(() => {
+                currentQuizIndex++;
+                loadQuizQuestion();
+            }, 1400);
+        }
+
+        function quitQuiz() {
+            if(confirm("Yakin ingin keluar dari kuis? Progress kuis saat ini akan hilang.")) {
+                switchView('home');
+            }
+        }
+
+        function finishQuiz() {
+            switchView('result');
+            
+            const accuracy = Math.round((quizCorrectCount / quizQuestions.length) * 100);
+            let starsEarned = accuracy === 100 ? 3 : (accuracy >= 60 ? 2 : 1);
+            
+            document.getElementById('result-score').innerText = quizScore;
+            document.getElementById('result-accuracy').innerText = `${accuracy}%`;
+            document.getElementById('result-stars').innerText = '⭐'.repeat(starsEarned);
+
+            const sectionKey = `${currentScript}_${currentCategory}_${currentSectionIdentifier.id}`;
+            if (!userProgress.sectionScores[sectionKey] || quizScore > userProgress.sectionScores[sectionKey]) {
+                userProgress.sectionScores[sectionKey] = quizScore;
+            }
+
+            if (!userProgress.completedSections.includes(sectionKey) && accuracy >= 60) {
+                userProgress.completedSections.push(sectionKey);
+                userProgress.stars += starsEarned;
+            }
+
+            localStorage.setItem('gohirakana_progress', JSON.stringify(userProgress));
+            updateStats();
+            renderLevels();
+        }
+
+        function restartQuiz() {
+            startQuiz(currentSectionIdentifier.script, currentSectionIdentifier.category, currentSectionIdentifier.id);
+        }
+
+        function updateStats() {
+            const totalStars = userProgress.stars;
+            const completedCount = userProgress.completedSections.length;
+            
+            let totalLetters = userProgress.completedSections.reduce((acc, key) => {
+                const parts = key.split('_');
+                const cat = parts[1];
+                const id = parseInt(parts[2]);
+                const db = parts[0] === 'hiragana' ? hiraganaDatabase : katakanaDatabase;
+                const sec = db[cat].find(s => s.id === id);
+                return acc + (sec ? sec.chars.length : 0);
+            }, 0);
+
+            let totalScoresSum = Object.values(userProgress.sectionScores).reduce((a, b) => a + b, 0);
+            let avgAccuracy = Object.keys(userProgress.sectionScores).length > 0 ? 
+                Math.round(totalScoresSum / (Object.keys(userProgress.sectionScores).length * 100) * 100) : 0;
+
+            document.getElementById('stat-stars').innerText = totalStars;
+            document.getElementById('stat-completed').innerText = `${completedCount}`;
+            document.getElementById('stat-accuracy').innerText = `${avgAccuracy}%`;
+            document.getElementById('stat-letters').innerText = totalLetters;
+        }
+
+        function openChartModal() {
+            document.getElementById('chart-modal').classList.remove('hidden');
+            renderChartContent();
+        }
+
+        function closeChartModal() {
+            document.getElementById('chart-modal').classList.add('hidden');
+        }
+
+        function switchChartScript(script) {
+            chartScript = script;
+            const hBtn = document.getElementById('chart-btn-hiragana');
+            const kBtn = document.getElementById('chart-btn-katakana');
+            if(script === 'hiragana') {
+                hBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-600 text-rose-500 shadow-sm';
+                kBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition text-slate-500 dark:text-slate-300';
+            } else {
+                kBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition bg-white dark:bg-slate-600 text-rose-500 shadow-sm';
+                hBtn.className = 'px-3 py-1 rounded-lg text-xs font-bold transition text-slate-500 dark:text-slate-300';
+            }
+            renderChartContent();
+        }
+
+        function renderChartContent() {
+            const container = document.getElementById('chart-content-container');
+            container.innerHTML = '';
+            const db = chartScript === 'hiragana' ? hiraganaDatabase : katakanaDatabase;
+
+            // 1. Bagian 1: Gojūon (Huruf Asli)
+            const gojuonDiv = document.createElement('div');
+            gojuonDiv.className = 'space-y-3';
+            gojuonDiv.innerHTML = `
+                <h4 class="font-bold text-sm text-rose-500 border-b border-slate-100 dark:border-slate-700 pb-1">Huruf Asli (Gojūon Dasar)</h4>
+                <p class="text-xs text-amber-600 dark:text-amber-400 italic">maaf jika urutan huruf pada tabel tidak sepenuhnya berurutan</p>
+            `;
+            const gojuonGrid = document.createElement('div');
+            gojuonGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3';
+            db.part1.forEach(sec => {
+                sec.chars.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-2xl p-3 text-center flex flex-col items-center justify-center';
+                    item.innerHTML = `
+                        <div class="font-japanese text-3xl font-bold mb-1">${c.jp}</div>
+                        <div class="text-xs font-semibold text-rose-500">${c.romaji}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5 truncate max-w-full">${c.vocabId}</div>
+                    `;
+                    gojuonGrid.appendChild(item);
+                });
+            });
+            gojuonDiv.appendChild(gojuonGrid);
+            container.appendChild(gojuonDiv);
+
+            // 2. Bagian 2: Dakuten & Handakuten
+            const dakutenDiv = document.createElement('div');
+            dakutenDiv.className = 'space-y-3 pt-2';
+            dakutenDiv.innerHTML = `<h4 class="font-bold text-sm text-rose-500 border-b border-slate-100 dark:border-slate-700 pb-1">Dakuten & Handakuten (Tenten / Maru)</h4>`;
+            const dakutenGrid = document.createElement('div');
+            dakutenGrid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3';
+            db.part2.forEach(sec => {
+                sec.chars.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-2xl p-3 text-center flex flex-col items-center justify-center';
+                    item.innerHTML = `
+                        <div class="font-japanese text-3xl font-bold mb-1">${c.jp}</div>
+                        <div class="text-xs font-semibold text-rose-500">${c.romaji}</div>
+                        <div class="text-[10px] text-slate-400 mt-0.5 truncate max-w-full">${c.vocabId}</div>
+                    `;
+                    dakutenGrid.appendChild(item);
+                });
+            });
+            dakutenDiv.appendChild(dakutenGrid);
+            container.appendChild(dakutenDiv);
+
+            // 3. Bagian 3: Yōon (Kombinasi Huruf) - Ditata format 3x10 (3 baris x 10 kolom)
+            const yoonDiv = document.createElement('div');
+            yoonDiv.className = 'space-y-3 pt-2';
+            yoonDiv.innerHTML = `<h4 class="font-bold text-sm text-rose-500 border-b border-slate-100 dark:border-slate-700 pb-1">Yōon (Kombinasi Huruf - Format 3x10)</h4>`;
+            
+            const yoonGrid = document.createElement('div');
+            // Menggunakan grid-cols-5 atau responsive agar muat 10 kolom di layar lebar
+            yoonGrid.className = 'grid grid-cols-2 sm:grid-cols-5 md:grid-cols-10 gap-2';
+            
+            db.part3.forEach(sec => {
+                sec.chars.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-center flex flex-col items-center justify-center';
+                    item.innerHTML = `
+                        <div class="font-japanese text-2xl font-bold">${c.jp}</div>
+                        <div class="text-[11px] font-semibold text-rose-500">${c.romaji}</div>
+                    `;
+                    yoonGrid.appendChild(item);
+                });
+            });
+            yoonDiv.appendChild(yoonGrid);
+            container.appendChild(yoonDiv);
+        }
+    </script>
+</body>
+</html>
